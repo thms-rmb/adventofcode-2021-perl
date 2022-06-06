@@ -13,29 +13,34 @@ close $handle or die "can't close $input: $!";
 
 
 sub sliding_window {
-    my ($ref, $n) = @_;
+    my ($n, @list) = @_;
+    map {
+        my $cursor = $_;
 
-    my @list = @{ $ref };
-    my @res;
-    my $cursor = 0;
-
-    do {
-        push @res, [
-            map { int $_ }
-            grep { $_ }
+        [
+            grep defined,
             map { $list[$cursor + $_] }
-            0 .. ($n -1 )
+            0 .. ($n - 1)
         ];
-    } while (++$cursor != scalar @list);
-
-    return @res;
+    } 0 .. (scalar @list - 1)
 }
 
 my $increases = 0;
-foreach my $ref ( sliding_window(\@lines, 2) ) {
+foreach my $ref ( sliding_window 2, map int, @lines ) {
     my ($a_val, $b_val) = @{ $ref };
     next unless defined $a_val and defined $b_val;
     $increases++ if $a_val < $b_val;
 }
-print $increases;
+say "part 1: $increases";
+
+$increases = 0;
+foreach my $ref ( sliding_window 2,
+                  map { sum grep defined, @{ $_ } }
+                  sliding_window 3,
+                  map int, @lines ) {
+    my ($a_val, $b_val) = @{ $ref };
+    next unless defined $a_val and defined $b_val;
+    $increases++ if $a_val < $b_val;
+}
+say "part 2: $increases";
 
