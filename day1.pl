@@ -11,7 +11,6 @@ open(my $handle, $input) or die "can't open $input: $!";
 chomp(my @lines = <$handle>);
 close $handle or die "can't close $input: $!";
 
-
 sub sliding_window {
     my ($n, @list) = @_;
     map {
